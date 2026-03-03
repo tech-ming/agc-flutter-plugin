@@ -23,8 +23,10 @@ rootProject.allprojects {
 
 apply plugin: 'com.android.library'
 
+
 android {
-    compileSdkVersion 30
+    namespace 'com.huawei.agc.flutter.cloudfunctions'
+    compileSdkVersion 34
     buildToolsVersion "30.0.1"
 
     defaultConfig {
