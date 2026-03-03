@@ -5,13 +5,13 @@
 package com.huawei.agconnectclouddb.utils;
 
 import com.huawei.agconnect.cloud.database.CloudDBZoneObject;
-import com.huawei.agconnectclouddb.objecttypes.ObjectTypeInfoHelper;
+import com.huawei.agconnectclouddb.ObjectTypeRegistry;
 
 import java.util.Locale;
 
 public abstract class AGCCloudDBUtil {
     public static Class<CloudDBZoneObject> getClass(String className) throws ClassNotFoundException {
-        for (Class<? extends CloudDBZoneObject> clazz : ObjectTypeInfoHelper.getObjectTypeInfo().getObjectTypes()) {
+        for (Class<? extends CloudDBZoneObject> clazz : ObjectTypeRegistry.get().getObjectTypes()) {
             if (clazz.getSimpleName().equals(className)) {
                 return (Class<CloudDBZoneObject>) clazz;
             }

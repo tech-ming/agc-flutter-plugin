@@ -26,7 +26,7 @@ import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException;
 import com.huawei.agconnectclouddb.constants.KeyConstants;
 import com.huawei.agconnectclouddb.constants.TransactionConstants;
 import com.huawei.agconnectclouddb.exception.AGCCloudDBException;
-import com.huawei.agconnectclouddb.objecttypes.ObjectTypeInfoHelper;
+import com.huawei.agconnectclouddb.ObjectTypeRegistry;
 import com.huawei.agconnectclouddb.utils.AGCCloudDBQueryBuilder;
 import com.huawei.agconnectclouddb.utils.AGCCloudDBZoneConfigUtil;
 import com.huawei.agconnectclouddb.utils.AGCCloudDBZoneObjectUtil;
@@ -74,7 +74,7 @@ public class AGCCloudDBModule {
 
     public void createObjectType(@NonNull Result result) throws AGCCloudDBException {
         try {
-            AGConnectCloudDB.getInstance().createObjectType(ObjectTypeInfoHelper.getObjectTypeInfo());
+            AGConnectCloudDB.getInstance().createObjectType(ObjectTypeRegistry.get());
             result.success(true);
         } catch (RuntimeException | AGConnectCloudDBException e) {
             throw AGCCloudDBException.from(e);

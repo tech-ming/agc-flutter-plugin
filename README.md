@@ -28,6 +28,11 @@
 - **compileSdkVersion 升级**：全部从 29/30 升级至 34，修复 `android:attr/lStar not found` 编译错误
 - **AndroidManifest 清理**：移除所有包 `AndroidManifest.xml` 中的 `package` 属性（与 `namespace` 冲突）
 
+### CloudDB 对象类型解耦
+
+原版插件硬编码依赖 `objecttypes.ObjectTypeInfoHelper`，要求业务 Schema 放入插件模块内，无法作为通用库复用。
+
+本 Fork 新增 `ObjectTypeRegistry`，由业务层（app）在启动时主动注入，插件与业务 Schema 完全解耦。接入步骤见下方 [CloudDB 接入](#clouddb-接入)。
 
 ## 使用方法
 
@@ -47,15 +52,53 @@ dependencies:
     path: packages/agc-flutter-plugin/agconnect_storage
 ```
 
-## CloudDB ObjectTypeInfoHelper 说明
+## CloudDB 接入
 
-若应用使用了 CloudDB 本地对象存储功能，需将 AGC 控制台导出的 `ObjectTypeInfoHelper.java` 放置在 app 模块对应路径：
+### 1. AGC 控制台导出对象类型代码
+
+导出 Android 代码时，**包名填写**：
 
 ```
-android/app/src/main/java/com/huawei/agconnectclouddb/objecttypes/ObjectTypeInfoHelper.java
+com.huawei.agconnectclouddb.objecttypes
 ```
 
-插件会在运行时通过反射自动加载，无需修改插件代码。
+
+### 2. 将导出文件放入 app 模块
+
+```
+android/app/src/main/java/com/huawei/agconnectclouddb/objecttypes/
+├── ObjectTypeInfoHelper.java
+├── YourObjectType1.java
+└── ...
+```
+
+### 3. app 模块添加 SDK 依赖
+
+`android/app/build.gradle.kts`：
+
+```kotlin
+dependencies {
+    implementation("com.huawei.agconnect:agconnect-cloud-database:1.9.1.300")
+}
+```
+
+### 4. 在 Application 中注册
+
+`MainApplication.kt`：
+
+```kotlin
+import com.huawei.agconnectclouddb.ObjectTypeRegistry
+import com.huawei.agconnectclouddb.objecttypes.ObjectTypeInfoHelper
+
+class MainApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        ObjectTypeRegistry.register(ObjectTypeInfoHelper.getObjectTypeInfo())
+    }
+}
+```
+
+新增对象类型后只需重新导出文件并更新 `ObjectTypeInfoHelper`，插件无需任何改动。
 
 ## 上游仓库
 
