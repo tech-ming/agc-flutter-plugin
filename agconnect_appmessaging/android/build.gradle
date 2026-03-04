@@ -25,7 +25,7 @@ apply plugin: 'com.android.library'
 
 
 android {
-    namespace 'com.huawei.agc.flutter.appmessaging.agconnect_appmessaging'
+    namespace 'com.huawei.agc.flutter.appmessaging'
     compileSdkVersion 34
     buildToolsVersion "34.0.0"
  
