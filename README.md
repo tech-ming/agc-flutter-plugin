@@ -13,7 +13,7 @@
 | `agconnect_core` | AGC 核心初始化 | ✅ | ✅ | ❌ |
 | `agconnect_auth` | 用户认证（邮箱、手机、匿名、华为账号） | ✅ | ✅ | ✅ |
 | `agconnect_clouddb` | 云数据库 | ✅ | ✅ | ✅ |
-| `agconnect_cloudfunctions` | 云函数 | ✅ | ✅ | ❌ |
+| `agconnect_cloudfunctions` | 云函数 | ✅ | ✅ | ✅ |
 | `agconnect_storage` | 云存储 | ✅ | ✅ | ❌ |
 | `agconnect_crash` | 崩溃分析 | ✅ | ✅ | ❌ |
 | `agconnect_remote_config` | 远程配置 | ✅ | ✅ | ❌ |

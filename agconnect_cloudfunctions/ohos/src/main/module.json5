@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "agconnect_cloudfunctions",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}
