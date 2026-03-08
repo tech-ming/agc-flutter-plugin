@@ -26,3 +26,5 @@ flutter:
         pluginClass: AGConnectCloudDBPlugin
       ios:
         pluginClass: AGConnectCloudDBPlugin
+      ohos:
+        pluginClass: AgconnectClouddbPlugin

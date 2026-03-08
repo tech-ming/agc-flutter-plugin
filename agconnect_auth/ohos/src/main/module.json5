@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "agconnect_auth",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}

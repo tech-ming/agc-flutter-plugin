@@ -25,3 +25,5 @@ flutter:
         pluginClass: AGConnectAuthPlugin
       ios:
         pluginClass: AGConnectAuthPlugin
+      ohos:
+        pluginClass: AGConnectAuthPlugin

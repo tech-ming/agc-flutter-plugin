@@ -1,0 +1,11 @@
+{
+  "name": "agconnect_auth",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@hw-agconnect/auth": "^1.0.5"
+  }
+}
