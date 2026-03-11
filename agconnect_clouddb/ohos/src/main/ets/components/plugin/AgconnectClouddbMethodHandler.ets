@@ -2,6 +2,7 @@ import { MethodCall, MethodResult } from '@ohos/flutter_ohos';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { AgconnectClouddbZoneManager } from './AgconnectClouddbZoneManager';
+import { ClouddbLocalCache } from './ClouddbLocalCache';
 
 const TAG = 'AgconnectClouddbMethodHandler';
 const DOMAIN = 0x0001;
@@ -12,6 +13,13 @@ const DOMAIN = 0x0001;
  */
 export class AgconnectClouddbMethodHandler {
   private zoneManager: AgconnectClouddbZoneManager = new AgconnectClouddbZoneManager();
+
+  /**
+   * 设置本地缓存实例，透传给 ZoneManager
+   */
+  setLocalCache(cache: ClouddbLocalCache): void {
+    this.zoneManager.setLocalCache(cache);
+  }
 
   /**
    * 处理方法调用
@@ -233,8 +241,9 @@ export class AgconnectClouddbMethodHandler {
     let args = call.args as Map<string, Object>;
     let zoneId = args.get('zoneId') as string;
     let queryMap = args.get('query') as Map<string, Object>;
+    let policyIndex = (args.get('policyIndex') as number) ?? 2; // 默认 POLICY_QUERY_DEFAULT
 
-    this.zoneManager.executeQuery(zoneId, queryMap).then((data: Map<string, Object>) => {
+    this.zoneManager.executeQuery(zoneId, queryMap, policyIndex).then((data: Map<string, Object>) => {
       result.success(data);
     }).catch((err: BusinessError) => {
       this.handleError(err, result);
@@ -246,8 +255,9 @@ export class AgconnectClouddbMethodHandler {
     let zoneId = args.get('zoneId') as string;
     let queryMap = args.get('query') as Map<string, Object>;
     let fieldName = args.get('field') as string;
+    let policyIndex = (args.get('policyIndex') as number) ?? 2;
 
-    this.zoneManager.executeCalculateQuery(zoneId, queryMap, fieldName, call.method).then((num: number) => {
+    this.zoneManager.executeCalculateQuery(zoneId, queryMap, fieldName, call.method, policyIndex).then((num: number) => {
       result.success(num);
     }).catch((err: BusinessError) => {
       this.handleError(err, result);

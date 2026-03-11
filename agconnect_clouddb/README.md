@@ -36,6 +36,44 @@ HarmonyOS 平台通过 `@kit.CloudFoundationKit` 的 `cloudDatabase` 模块实�
 - 排序与分页（orderByAsc、orderByDesc、limit）
 - 聚合查询（average、sum、maximum、minimum、count）
 - 事务操作（顺序执行 upsert/delete 模拟）
+- **离线数据缓存**（本地 relationalStore 缓存，离线时自动降级读取）
+
+### 离线缓存机制
+
+HarmonyOS `cloudDatabase.DatabaseZone.query()` 在无网络时 Promise 会永远 pending，
+不同于 Android/iOS SDK 内置的本地缓存。因此在原生层增加了基于 `@kit.ArkData` relationalStore 的本地缓存层。
+
+**工作原理：**
+
+| 操作 | 行为 |
+|------|------|
+| upsert / delete / transaction | 云端成功后，异步同步写入本地 SQLite 缓存 |
+| query（LOCAL_ONLY） | 直接读本地缓存 |
+| query（CLOUD_ONLY） | 查云端，成功后回写缓存 |
+| query（DEFAULT） | 先云端查询（10s 超时），超时/失败降级读本地缓存 |
+| calculateQuery | 同 query 策略 |
+
+**前提条件：** 离线有数据的前提是至少在有网时成功查询或写入过一次。
+
+**缓存建表：** 根据 `rawfile/schema.json` 动态建表，字段类型自动映射。
+
+**schema 变更处理：**
+
+本地缓存基于 `schema.json` 中的 `schemaVersion` 字段实现自动销毁重建。
+在 AGC 控制台修改对象类型并导出新的 `schema.json` 后（`schemaVersion` 会递增），
+应用下次启动时自动检测版本变更，销毁旧缓存数据库并按新 schema 重新建表。
+缓存数据在联网后自动从云端回填，无需用户手动卸载重装。
+
+版本检测使用 `@kit.ArkData` 的 `preferences` 持久化上次建表时的 `schemaVersion`。
+
+**核心文件：**
+
+| 文件 | 职责 |
+|------|------|
+| `ClouddbLocalCache.ets` | 本地缓存管理器（建表、upsert/delete/query/聚合查询） |
+| `AgconnectClouddbZoneManager.ets` | 集成缓存层（写操作回写、读操作降级） |
+| `AgconnectClouddbPlugin.ets` | 插件入口（初始化缓存并注入） |
+| `AgconnectClouddbMethodHandler.ets` | 透传缓存实例 |
 
 ### 与 Android/iOS 的差异
 
