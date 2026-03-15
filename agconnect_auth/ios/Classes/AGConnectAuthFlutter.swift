@@ -618,6 +618,65 @@ class AGConnectAuthFlutter: NSObject {
         viewModel.link(credential: credential, completion: resolve)
     }
 
+    /// Re-authenticates the current user to refresh the sensitive operation time window.
+    /// - Parameters:
+    ///   - credential: Authentication credential dictionary.
+    ///   - resolve: In the success scenario, nil will be returned.
+    @objc func reauthenticate(
+        _ credential: [String: Any],
+        resolver resolve: @escaping FlutterResult
+    ) {
+        Log.showInPanel(message: #function, type: .call)
+        guard let provider = credential["provider"] as? Int else { return }
+        switch provider {
+        case AGCAuthProviderType.email.rawValue:
+            reauthenticateWithEmail(credentailDic: credential, resolve: resolve)
+            break
+        case AGCAuthProviderType.phone.rawValue:
+            reauthenticateWithPhone(credentailDic: credential, resolve: resolve)
+            break
+        default:
+            Log.showInPanel(message: #function, type: .fail)
+            print("Reauthenticate: this provider is not supported.")
+            return
+        }
+    }
+
+    private func reauthenticateWithEmail(credentailDic: [String: Any], resolve: @escaping FlutterResult) {
+        var email = ""
+        var password = ""
+        if let mail = credentailDic["email"] as? String {
+            email = mail
+        }
+        if let pass = credentailDic["password"] as? String {
+            password = pass
+        }
+        let credential = AGCEmailAuthProvider.credential(withEmail: email, password: password)
+        reauthenticateHandler(credential: credential, resolve: resolve)
+    }
+
+    private func reauthenticateWithPhone(credentailDic: [String: Any], resolve: @escaping FlutterResult) {
+        var countryCode = ""
+        var phoneNumber = ""
+        var password = ""
+        if let code = credentailDic["countryCode"] as? String {
+            countryCode = code
+        }
+        if let number = credentailDic["phoneNumber"] as? String {
+            phoneNumber = number
+        }
+        if let pass = credentailDic["password"] as? String {
+            password = pass
+        }
+        let credential = AGCPhoneAuthProvider.credential(withCountryCode: countryCode, phoneNumber: phoneNumber, password: password)
+        reauthenticateHandler(credential: credential, resolve: resolve)
+    }
+
+    private func reauthenticateHandler(credential: AGCAuthCredential, resolve: @escaping FlutterResult) {
+        viewModel.delegate = self
+        viewModel.reauthenticate(credential: credential, completion: resolve)
+    }
+
     // MARK: - Private Helper Functions
 
     private func signInWithPhone(credentailDic: [String: Any], resolve: @escaping FlutterResult) {

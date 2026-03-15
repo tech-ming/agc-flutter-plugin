@@ -285,6 +285,19 @@ public class AGConnectAuthViewModel {
             self.delegate?.postError(error: userNilError, result: completion)
         }
     }
+
+    func reauthenticate(credential: AGCAuthCredential, completion: @escaping FlutterResult) {
+        if let user = AGCAuth.instance().currentUser {
+            user.reauthenticate(credential)
+                .onSuccess(callback: { result in
+                    self.delegate?.postData(data: nil, result: completion)
+                }).onFailure(callback: { error in
+                    self.delegate?.postError(error: error, result: completion)
+                })
+        } else {
+            self.delegate?.postError(error: userNilError, result: completion)
+        }
+    }
     
     func getAutoCollectionAAID(completion: @escaping FlutterResult)  {
         let isAutoCollection =  AGCAuth.instance().isAutoCollectionAAID()

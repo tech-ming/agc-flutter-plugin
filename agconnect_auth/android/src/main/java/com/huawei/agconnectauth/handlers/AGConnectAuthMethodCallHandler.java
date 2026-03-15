@@ -66,6 +66,9 @@ public class AGConnectAuthMethodCallHandler implements MethodCallHandler {
             case "updatePassword":
                 agConnectAuthModule.handleUpdatePassword(call, result);
                 break;
+            case "reauthenticate":
+                agConnectAuthModule.handleReauthenticate(call, result);
+                break;
             case "getUserExtra":
                 agConnectAuthModule.handleGetUserExtra(result);
                 break;

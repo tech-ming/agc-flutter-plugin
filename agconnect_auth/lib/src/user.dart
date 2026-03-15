@@ -175,6 +175,19 @@ class AGCUser {
     }).catchError(PlatformAuth.handlePlatformException);
   }
 
+  /// Re-authenticates the current user to refresh the sensitive operation time window.
+  ///
+  /// Sensitive operations (such as updating password, email, or phone number) require
+  /// the user to have signed in recently (within about 5 minutes). If the time window
+  /// has expired, call this method with the user's credential to refresh it, then retry
+  /// the sensitive operation. This does NOT trigger signOut/signIn.
+  Future<void> reauthenticate(AGCAuthCredential credential) {
+    return PlatformAuth.methodChannel.invokeMethod(
+        'reauthenticate',
+        <String, dynamic>{'credential': credential.toMap()},
+    ).catchError(PlatformAuth.handlePlatformException);
+  }
+
   /// Obtains UserExtra of the current user.
   Future<AGCUserExtra> get userExtra {
     return PlatformAuth.methodChannel

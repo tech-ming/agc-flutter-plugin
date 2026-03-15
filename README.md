@@ -22,6 +22,14 @@
 
 ## 主要改动
 
+### Auth 模块：新增 reauthenticate API
+
+新增 `AGCUser.reauthenticate(credential)` 方法（Android / iOS / HarmonyOS 三端），用于敏感操作超时后刷新认证时效窗口，无需 signOut/signIn。详见 [agconnect_auth/README.md](./agconnect_auth/README.md)。
+
+### Auth + CloudDB 联动：敏感操作后 Token 刷新导致 CloudDB 崩溃
+
+Android 端执行修改邮箱/手机号等敏感操作后，Auth Token 会被刷新，但已打开的 `CloudDBZone` 仍绑定旧 Token，后续云端查询会触发原生层空指针崩溃（SIGSEGV）。HarmonyOS 端不受影响。解决方案：敏感操作后先关闭再重新打开所有 `CloudDBZone`。详见 [agconnect_auth/README.md](./agconnect_auth/README.md#已知问题)。
+
 ### Android Gradle Plugin 兼容性修复
 
 - **namespace 声明**：在所有包的 `android/build.gradle` 中补充 `namespace` 字段（AGP 7.3+ 强制要求）

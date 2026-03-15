@@ -245,6 +245,17 @@ public class AGConnectAuthModule {
         viewModel.handleLink(methodCall, result);
     }
 
+    /**
+     * Re-authenticates the current user to refresh the sensitive operation time window.
+     *
+     * @param methodCall: Command object representing a method call on a MethodChannel.
+     * @param result:     In the success scenario, null will be returned, or AGCAuthException will be returned
+     *                    in the failure scenario.
+     */
+    public void handleReauthenticate(MethodCall methodCall, Result result) {
+        viewModel.handleReauthenticate(methodCall, result);
+    }
+
     public void handleSetAutoCollectionAAID(MethodCall methodCall, Result result){
         viewModel.handleSetAutoCollectionAAID(methodCall, result);
     }

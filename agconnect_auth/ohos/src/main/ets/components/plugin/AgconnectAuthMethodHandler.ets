@@ -427,6 +427,35 @@ export class AgconnectAuthMethodHandler {
     this.handleRequestPhoneVerifyCode(call, result);
   }
 
+  /** 重新认证当前用户（刷新敏感操作时效） */
+  handleReauthenticate(call: MethodCall, result: MethodResult): void {
+    let credentialMap = call.argument('credential') as Object;
+    let signInParam = buildSignInParam(credentialMap);
+    if (signInParam == null) {
+      let errDetails: Record<string, Object> = {};
+      result.error("", "不支持的认证提供商", errDetails);
+      return;
+    }
+    auth.getCurrentUser()
+      .then((user) => {
+        if (user == null) {
+          let errDetails: Record<string, Object> = {};
+          result.error("", "当前无登录用户", errDetails);
+          return;
+        }
+        user.userReauthenticate(signInParam)
+          .then(() => {
+            result.success(null);
+          })
+          .catch((err: BusinessError) => {
+            handleError(result, err);
+          });
+      })
+      .catch((err: BusinessError) => {
+        handleError(result, err);
+      });
+  }
+
   /** 获取支持的认证方式列表 */
   handleGetSupportedAuthList(result: MethodResult): void {
     // TODO: 鸿蒙 Auth SDK 暂无 getSupportedAuthList 接口，返回空列表兜底

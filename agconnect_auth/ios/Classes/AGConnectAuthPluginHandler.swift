@@ -183,6 +183,13 @@ public class AGConnectAuthPluginHandler: NSObject, FlutterPlugin {
             agconnectAuth.updatePassword(password, withVerificationCode: verifyCode, withProvider: provider, resolver: { (response) in
                 result(response)
             })
+        case method.REAUTHENTICATE:
+            guard let args = call.arguments as? [String: Any] else {
+                return
+            }
+            agconnectAuth.reauthenticate(args["credential"] as! [String: Any], resolver: { (response) in
+                result(response)
+            })
         case method.GET_USER_EXTRA:
             agconnectAuth.getUserExtra({ (response) in
                 result(response)
@@ -269,6 +276,7 @@ public class AGConnectAuthPluginHandler: NSObject, FlutterPlugin {
         let UPDATE_EMAIL = "updateEmail"
         let UPDATE_PHONE = "updatePhone"
         let UPDATE_PASSWORD = "updatePassword"
+        let REAUTHENTICATE = "reauthenticate"
         let GET_USER_EXTRA = "getUserExtra"
         let GET_TOKEN = "getToken"
         let REQUEST_EMAIL_VERFY_CODE = "requestEmailVerifyCode"

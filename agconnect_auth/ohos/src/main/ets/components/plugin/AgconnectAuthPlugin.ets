@@ -112,6 +112,9 @@ export default class AgconnectAuthPlugin implements FlutterPlugin, MethodCallHan
       case "updatePassword":
         this.handler.handleUpdatePassword(call, result);
         break;
+      case "reauthenticate":
+        this.handler.handleReauthenticate(call, result);
+        break;
       case "getUserExtra":
         this.handler.handleGetUserExtra(result);
         break;

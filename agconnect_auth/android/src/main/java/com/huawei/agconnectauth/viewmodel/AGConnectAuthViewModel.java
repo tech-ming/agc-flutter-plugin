@@ -454,6 +454,27 @@ public class AGConnectAuthViewModel {
                 .addOnFailureListener(AGConnectAuthUtils.authFailureListener(result));
     }
 
+    /**
+     * Re-authenticates the current user to refresh the sensitive operation time window.
+     * <p>
+     * credential: Authentication credential, which must be created using the corresponding Auth Provider type.
+     *
+     * @param call:   Command object representing a method call on a MethodChannel.
+     * @param result: In the success scenario, null will be returned, or AGCAuthException will be returned
+     *                in the failure scenario.
+     */
+    public void handleReauthenticate(MethodCall call, final Result result) {
+        AGConnectAuthCredential credential = AGConnectAuthUtils.getCredentialFromArguments(
+                (Map) call.argument("credential"), result);
+        if (credential != null) {
+            AGConnectAuth.getInstance()
+                    .getCurrentUser()
+                    .reauthenticate(credential)
+                    .addOnSuccessListener(aVoid -> result.success(null))
+                    .addOnFailureListener(AGConnectAuthUtils.authFailureListener(result));
+        }
+    }
+
     public void handleSetAutoCollectionAAID(MethodCall call, final Result result){
         Map map = (Map) call.arguments;
         Boolean isAutoCollection = (Boolean) map.get("isAutoCollection");
