@@ -16,7 +16,7 @@
 | `agconnect_cloudfunctions` | 云函数 | ✅ | ✅ | ✅ |
 | `agconnect_storage` | 云存储 | ✅ | ✅ | ❌ |
 | `agconnect_crash` | 崩溃分析 | ✅ | ✅ | ❌ |
-| `agconnect_remote_config` | 远程配置 | ✅ | ✅ | ❌ |
+| `agconnect_remote_config` | 远程配置 | ✅ | ✅ | ✅ |
 | `agconnect_applinking` | 应用链接 | ✅ | ✅ | ❌ |
 | `agconnect_appmessaging` | 应用内消息 | ✅ | ✅ | ❌ |
 

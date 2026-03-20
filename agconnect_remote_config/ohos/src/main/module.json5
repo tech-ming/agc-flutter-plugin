@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "agconnect_remote_config",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}
