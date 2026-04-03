@@ -216,9 +216,14 @@ export class AgconnectAuthMethodHandler {
           result.error("", "当前无登录用户", errDetails);
           return;
         }
+        let displayName = call.argument('displayName') as string;
+        let photoUrl = call.argument('photoUrl') as string;
+        // HACK: OHOS AGC Auth SDK 不接受空字符串，用空格代替表示"清空"，
+        // 读取时在 mapFromUser 中 trim 还原，保证跨平台数据一致。
+        // 改进计划：等官方修复后移除此变通方案。
         let profileInfo: UserProfileInfo = {
-          displayName: call.argument('displayName') as string,
-          photoUrl: call.argument('photoUrl') as string,
+          displayName: displayName === '' ? ' ' : displayName,
+          photoUrl: photoUrl === '' ? ' ' : photoUrl,
         };
         user.updateProfile(profileInfo)
           .then(() => {

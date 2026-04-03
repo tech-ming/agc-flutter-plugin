@@ -76,6 +76,21 @@ await cloudDbService.reopenAllZones();
 await remoteDataSource.upsertUserProfile(updated);
 ```
 
+### HarmonyOS 端 updateProfile 不接受空字符串
+
+**现象**：调用 `AGCUser.updateProfile()` 传入空字符串 `''`（用于清空昵称或头像）时，HarmonyOS 端 AGC Auth SDK 报错，Android/iOS 端正常。
+
+**根因**：HarmonyOS AGC Auth SDK 的 `user.updateProfile(profileInfo)` 不接受空字符串作为字段值。
+
+**解决方案**（两层配合）：
+
+1. **OHOS 原生层写入时转换**（`AgconnectAuthMethodHandler.ets`）：空字符串 `''` 替换为空格 `' '`，绕过 SDK 限制
+2. **Dart 层读取时统一清洗**（`user.dart` 的 `_trimToNull`）：所有平台读取 `displayName` / `photoUrl` 时 trim 后若为空则返回 `null`，保证跨平台数据一致
+
+**影响范围**：仅 HarmonyOS 端写入需要变通，读取清洗对所有平台透明无副作用。
+
+**改进计划**：等官方修复后移除 OHOS 原生层的空字符串→空格转换。
+
 ## 开发指南
 
 - [使用指南](https://developer.huawei.com/consumer/cn/doc/development/AppGallery-connect-Guides/agc-auth-flutter-usage)

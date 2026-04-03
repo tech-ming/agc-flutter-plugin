@@ -5,6 +5,7 @@ import {
   MethodCallHandler,
   MethodChannel,
   MethodResult,
+  AbilityPluginBinding,
 } from '@ohos/flutter_ohos';
 import { AgconnectAuthMethodHandler } from './AgconnectAuthMethodHandler';
 import auth from '@hw-agconnect/auth';
@@ -17,6 +18,8 @@ export default class AgconnectAuthPlugin implements FlutterPlugin, MethodCallHan
   private channel: MethodChannel | null = null;
   // 所有方法实现委托给 handler，保持本类职责单一
   private readonly handler: AgconnectAuthMethodHandler = new AgconnectAuthMethodHandler();
+  // 缓存 FlutterPluginBinding，在 onAttachedToAbility 中使用
+  private pluginBinding: FlutterPluginBinding | null = null;
 
   constructor() {
   }
@@ -26,23 +29,34 @@ export default class AgconnectAuthPlugin implements FlutterPlugin, MethodCallHan
   }
 
   onAttachedToEngine(binding: FlutterPluginBinding): void {
+    this.pluginBinding = binding;
     this.channel = new MethodChannel(binding.getBinaryMessenger(), "com.huawei.flutter/agconnect_auth");
     this.channel.setMethodCallHandler(this);
+  }
 
-    // 读取 agconnect-services.json 并初始化 AGC Auth SDK
-    // 鸿蒙侧 Auth SDK 必须调用 auth.init(context, json) 才能正常发起网络请求
-    this._initAuthSdk(binding.getApplicationContext());
+  /**
+   * Ability 绑定回调，可获取 UIAbilityContext。
+   *
+   * 华为账号登录（hwid）内部的 AuthenticationController 需要 UIAbilityContext
+   * 才能弹出授权界面。ApplicationContext 不具备 UI 能力，会导致
+   * "Incorrect context parameter type" 错误。
+   *
+   * 因此将 Auth SDK 初始化延迟到此处，使用 UIAbilityContext 替代 ApplicationContext。
+   */
+  onAttachedToAbility(binding: AbilityPluginBinding): void {
+    const abilityContext = binding.getAbility().context as common.UIAbilityContext;
+    this._initAuthSdk(abilityContext);
   }
 
   /**
    * 从 rawfile 读取 agconnect-services.json 并初始化 Auth SDK。
-   * 必须在 onAttachedToEngine 中调用，否则 requestVerifyCode 等网络方法内部
-   * HTTP 客户端（post）为 undefined，导致运行时报错。
+   *
+   * 使用 UIAbilityContext 初始化，确保华为账号登录等需要 UI 能力的功能正常工作。
    *
    * 同时将 AuthProvider 注入到 CloudFoundationKit，使 CloudDB、CloudStorage 等
    * 服务能识别当前用户的认证身份（否则 Authenticated 角色的操作会 permission denied）。
    */
-  private _initAuthSdk(context: common.Context): void {
+  private _initAuthSdk(context: common.UIAbilityContext): void {
     try {
       const resourceManager = context.resourceManager;
       // rawfile 读取返回 Uint8Array
@@ -60,6 +74,7 @@ export default class AgconnectAuthPlugin implements FlutterPlugin, MethodCallHan
   }
 
   onDetachedFromEngine(binding: FlutterPluginBinding): void {
+    this.pluginBinding = null;
     if (this.channel != null) {
       this.channel.setMethodCallHandler(null)
     }

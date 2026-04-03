@@ -42,8 +42,10 @@ class AGCUser {
     _uid = map['uid'];
     _email = map['email'];
     _phone = map['phone'];
-    _displayName = map['displayName'];
-    _photoUrl = map['photoUrl'];
+    // HACK: OHOS AGC Auth SDK 不接受空字符串，写入时用空格代替，
+    // 这里统一 trim 还原，保证跨平台读取一致。
+    _displayName = _trimToNull(map['displayName']);
+    _photoUrl = _trimToNull(map['photoUrl']);
     _providerId = AuthProviderType.values[map['providerId']];
     _providerInfo = (map['providerInfo'] as List?)
         ?.map((e) => (e as Map)
@@ -51,6 +53,13 @@ class AGCUser {
         .toList(growable: false);
     _emailVerified = map['emailVerified'] == 1;
     _passwordSet = map['passwordSet'] == 1;
+  }
+
+  /// trim 后为空则返回 null，否则返回 trim 后的值
+  static String? _trimToNull(dynamic value) {
+    if (value == null) return null;
+    final trimmed = value.toString().trim();
+    return trimmed.isEmpty ? null : trimmed;
   }
 
   /// Checks whether a user is an anonymous user.
