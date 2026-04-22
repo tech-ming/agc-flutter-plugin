@@ -373,16 +373,29 @@ export class AgconnectAuthMethodHandler {
       });
   }
 
-  /** 获取用户 Token */
+  /** 获取用户 Token（服务端签名的 PS256 Access Token） */
   handleGetToken(call: MethodCall, result: MethodResult): void {
     let forceRefresh = call.argument('forceRefresh') as boolean;
-    // 鸿蒙侧 getToken 返回 Token，属性为 tokenString 和 expiration
-    auth.getToken(forceRefresh)
-      .then((tokenResult) => {
-        let res: Record<string, Object> = {};
-        res['token'] = tokenResult.tokenString;
-        res['expirePeriod'] = tokenResult.expiration;
-        result.success(res);
+    // 必须通过 user.getToken() 获取服务端签名的 Access Token（PS256），
+    // 而非 auth.getToken() 返回的本地临时 Token（HS256）。
+    // auth.getToken() 返回的 HS256 Token 无法被云函数 verifyAccessToken 验证。
+    auth.getCurrentUser()
+      .then((user) => {
+        if (user == null) {
+          let errDetails: Record<string, Object> = {};
+          result.error("", "当前无登录用户", errDetails);
+          return;
+        }
+        user.getToken(forceRefresh)
+          .then((tokenResult) => {
+            let res: Record<string, Object> = {};
+            res['token'] = tokenResult.getString();
+            res['expirePeriod'] = tokenResult.getExpirePeriod();
+            result.success(res);
+          })
+          .catch((err: BusinessError) => {
+            handleError(result, err);
+          });
       })
       .catch((err: BusinessError) => {
         handleError(result, err);
