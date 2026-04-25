@@ -165,7 +165,7 @@ export class AgconnectStorageReferenceHandler {
       bucket.uploadFile(this.context, {
         localPath: cacheFile,
         cloudPath: cloudPath,
-        mode: request.agent.Mode.BACKGROUND,
+        mode: request.agent.Mode.FOREGROUND,
       })
         .then((task: request.agent.Task) => {
           // 先注册 EventChannel，确保 Dart 端 listen 时 StreamHandler 已就绪
@@ -214,7 +214,7 @@ export class AgconnectStorageReferenceHandler {
       bucket.uploadFile(this.context, {
         localPath: tempFileName,
         cloudPath: cloudPath,
-        mode: request.agent.Mode.BACKGROUND,
+        mode: request.agent.Mode.FOREGROUND,
       })
         .then((task: request.agent.Task) => {
           // 先注册 EventChannel，确保 Dart 端 listen 时 StreamHandler 已就绪
