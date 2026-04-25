@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "agconnect_cloudstorage",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}

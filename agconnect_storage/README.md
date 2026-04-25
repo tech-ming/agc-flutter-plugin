@@ -1,24 +1,54 @@
-# AppGallery Connect CloudStorage for Flutter
+﻿# AGConnect Storage（云存储）
 
-## Introduction
+## 简介
 
-AppGallery Connect CloudStorage allows you to store high volumes of data such as images, audio, videos, and other user-generated content securely and economically. This scalable and maintenance-free service can free you from development, deployment, O&M, and capacity expansion of storage servers, so you can focus on service capability building and operations with better user experience.
-[Learn More](https://developer.huawei.com/consumer/en/doc/development/AppGallery-connect-Guides/agc-cloudstorage-introduction)
+云存储提供图片、音频、视频等用户内容的对象存储能力。
 
+- 官方文档：https://developer.huawei.com/consumer/cn/doc/development/AppGallery-connect-Guides/agc-cloudstorage-introduction
 
-## Installing the Plugin
+## 平台支持
 
-Add dependencies to the pubspec.yaml file of the Flutter project.
-agconnect_cloudstorage:
-Run the following command on the Terminal page or click Pub get in Android Studio to add dependencies.
+| Android | iOS | HarmonyOS |
+|:---:|:---:|:---:|
+| ✅ | ✅ | ✅ |
+
+## 安装
+
+```yaml
+dependencies:
+  agconnect_cloudstorage:
+    path: packages/agc-flutter-plugin/agconnect_storage
+```
+
+```bash
 flutter pub get
-For more details, please refer to [Getting Started with Flutter](https://developer.huawei.com/consumer/en/doc/development/AppGallery-connect-Guides/agc-get-started-flutter)
+```
 
-## Development Guide
+## HarmonyOS 说明
 
-- [Usage](https://developer.huawei.com/consumer/en/doc/development/AppGallery-connect-Guides/agc-cloudstorage-flutter-usage)
-- [Reference](https://developer.huawei.com/consumer/en/doc/development/AppGallery-connect-References/flutter-cloudstorage-overview)
+HarmonyOS 通过 `@kit.CloudFoundationKit` 的 `cloudStorage` 模块实现。
 
-## License
+### 前置条件
 
-CloudStorage plugin is licensed under the: [Apache License, version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+1. 在 AGC 控制台开通云存储。
+2. 配置 AGC 配置文件到 OHOS 工程资源目录。
+3. 声明网络权限 `ohos.permission.INTERNET`。
+
+### 已适配能力
+
+- `uploadFile` / `uploadData`
+- `downloadToFile` / `downloadData`
+- `deleteFile`
+- `getMetadata` / `updateMetadata`
+- `getDownloadUrl`
+- `list` / `listAll`
+- 任务控制：`pause` / `resume` / `cancel`
+
+### 差异说明
+
+- `referenceFromUrl`：OHOS 侧未实现。
+- 区域查询与超时/重试参数：OHOS 侧按兼容策略处理。
+
+## 许可
+
+Apache License 2.0

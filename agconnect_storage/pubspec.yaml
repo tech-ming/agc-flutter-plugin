@@ -25,3 +25,5 @@ flutter:
         pluginClass: AGCStoragePlugin
       ios:
         pluginClass: AGCStoragePlugin
+      ohos:
+        pluginClass: AgconnectCloudstoragePlugin

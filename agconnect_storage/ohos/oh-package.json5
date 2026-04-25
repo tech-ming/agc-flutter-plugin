@@ -1,0 +1,9 @@
+{
+  "name": "agconnect_cloudstorage",
+  "version": "1.0.0",
+  "description": "AGConnect Cloud Storage plugin for HarmonyOS.",
+  "main": "index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {}
+}
