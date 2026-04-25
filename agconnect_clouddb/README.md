@@ -1,15 +1,15 @@
-# AGConnect CloudDB（云数据库）
+﻿# AGConnect CloudDB（云数据库）
 
 ## 简介
 
-云数据库是一款端云协同的数据库产品，提供设备与云端之间的数据协同管理能力、统一数据模型和丰富的数据管理 API。
+CloudDB 提供端云协同的数据管理能力，支持统一数据模型与查询操作。
 
-[官方文档](https://developer.huawei.com/consumer/cn/doc/AppGallery-connect-Guides/agc-clouddb-introduction-0000001054212760)
+- 官方文档：https://developer.huawei.com/consumer/cn/doc/AppGallery-connect-Guides/agc-clouddb-introduction-0000001054212760
 
 ## 平台支持
 
 | Android | iOS | HarmonyOS |
-|:-------:|:---:|:---------:|
+|:---:|:---:|:---:|
 | ✅ | ✅ | ✅ |
 
 ## 安装
@@ -24,73 +24,81 @@ dependencies:
 flutter pub get
 ```
 
-## HarmonyOS 适配说明
+## CloudDB 接入
 
-HarmonyOS 平台通过 `@kit.CloudFoundationKit` 的 `cloudDatabase` 模块实现，支持以下功能：
+### 1. 在 AGC 控制台导出对象类型代码
 
-- 初始化 CloudDB / 创建对象类型
-- 打开/关闭/删除 CloudDB Zone
-- 数据写入（upsert）
-- 数据删除（delete）
-- 条件查询（equalTo、notEqualTo、greaterThan、lessThan、in、contains、beginsWith、endsWith、isNull、isNotNull）
-- 排序与分页（orderByAsc、orderByDesc、limit）
-- 聚合查询（average、sum、maximum、minimum、count）
-- 事务操作（顺序执行 upsert/delete 模拟）
-- **离线数据缓存**（本地 relationalStore 缓存，离线时自动降级读取）
+导出 Android 代码时，包名填写：
+
+```text
+com.huawei.agconnectclouddb.objecttypes
+```
+
+### 2. 将导出文件放入 app 模块
+
+```text
+android/app/src/main/java/com/huawei/agconnectclouddb/objecttypes/
+├── ObjectTypeInfoHelper.java
+├── YourObjectType1.java
+└── ...
+```
+
+### 3. app 模块添加 CloudDB 依赖
+
+`android/app/build.gradle.kts`：
+
+```kotlin
+dependencies {
+    implementation("com.huawei.agconnect:agconnect-cloud-database:1.9.1.300")
+}
+```
+
+### 4. 在 Application 中注册对象类型
+
+`MainApplication.kt`：
+
+```kotlin
+import com.huawei.agconnectclouddb.ObjectTypeRegistry
+import com.huawei.agconnectclouddb.objecttypes.ObjectTypeInfoHelper
+
+class MainApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        ObjectTypeRegistry.register(ObjectTypeInfoHelper.getObjectTypeInfo())
+    }
+}
+```
+
+新增对象类型后，只需重新导出并更新 `ObjectTypeInfoHelper`。
+
+## HarmonyOS 说明
+
+HarmonyOS 通过 `@kit.CloudFoundationKit` 的 `cloudDatabase` 模块实现，并补充了本地缓存层。
+
+### 关键能力
+
+- CloudDB 初始化与对象类型创建
+- Zone 打开/关闭/删除
+- `upsert` / `delete`
+- 条件查询、排序、分页、聚合
+- 事务顺序执行（模拟）
+- 离线缓存回退查询
 
 ### 离线缓存机制
 
-HarmonyOS `cloudDatabase.DatabaseZone.query()` 在无网络时 Promise 会永远 pending，
-不同于 Android/iOS SDK 内置的本地缓存。因此在原生层增加了基于 `@kit.ArkData` relationalStore 的本地缓存层。
-
-**工作原理：**
-
-| 操作 | 行为 |
-|------|------|
-| upsert / delete / transaction | 云端成功后，异步同步写入本地 SQLite 缓存 |
-| query（LOCAL_ONLY） | 直接读本地缓存 |
-| query（CLOUD_ONLY） | 查云端，成功后回写缓存 |
-| query（DEFAULT） | 先云端查询（10s 超时），超时/失败降级读本地缓存 |
-| calculateQuery | 同 query 策略 |
-
-**前提条件：** 离线有数据的前提是至少在有网时成功查询或写入过一次。
-
-**缓存建表：** 根据 `rawfile/schema.json` 动态建表，字段类型自动映射。
-
-**schema 变更处理：**
-
-本地缓存基于 `schema.json` 中的 `schemaVersion` 字段实现自动销毁重建。
-在 AGC 控制台修改对象类型并导出新的 `schema.json` 后（`schemaVersion` 会递增），
-应用下次启动时自动检测版本变更，销毁旧缓存数据库并按新 schema 重新建表。
-缓存数据在联网后自动从云端回填，无需用户手动卸载重装。
-
-版本检测使用 `@kit.ArkData` 的 `preferences` 持久化上次建表时的 `schemaVersion`。
-
-**核心文件：**
-
-| 文件 | 职责 |
-|------|------|
-| `ClouddbLocalCache.ets` | 本地缓存管理器（建表、upsert/delete/query/聚合查询） |
-| `AgconnectClouddbZoneManager.ets` | 集成缓存层（写操作回写、读操作降级） |
-| `AgconnectClouddbPlugin.ets` | 插件入口（初始化缓存并注入） |
-| `AgconnectClouddbMethodHandler.ets` | 透传缓存实例 |
+- 写操作成功后异步回写本地缓存。
+- 默认查询优先云端，超时或失败回退本地缓存。
+- 本地建表基于 `rawfile/schema.json`。
+- `schemaVersion` 变化时自动重建本地缓存表。
 
 ### 与 Android/iOS 的差异
 
-| 功能 | Android/iOS | HarmonyOS | 说明 |
-|------|:-----------:|:---------:|------|
-| enableNetwork / disableNetwork | ✅ | ⚠️ | HarmonyOS 无对应 API，调用不报错但无实际效果 |
-| setUserKey / updateDataEncryptionKey | ✅ | ⚠️ | HarmonyOS 无对应 API，调用不报错 |
-| subscribeSnapshot | ✅ | ⚠️ | HarmonyOS 无快照订阅 API，调用不报错但不会推送事件 |
-| executeQueryUnsynced | ✅ | ⚠️ | 使用普通查询代替 |
-| executeServerStatusQuery | ✅ | ⚠️ | 返回客户端本地时间戳 |
-| startAt / startAfter / endAt / endBefore | ✅ | ❌ | HarmonyOS 查询不支持范围游标 |
+- `enableNetwork/disableNetwork`：OHOS 无对应 API。
+- `setUserKey/updateDataEncryptionKey`：OHOS 无对应 API。
+- `subscribeSnapshot`：OHOS 无快照订阅 API。
+- `executeQueryUnsynced`：降级为普通查询。
+- `startAt/startAfter/endAt/endBefore`：OHOS 不支持范围游标。
 
-## 开发指南
+## 许可
 
-- [使用指南](https://developer.huawei.com/consumer/cn/doc/AppGallery-connect-Guides/agc-clouddb-flutter-usage-0000001154073689)
-- [API 参考](https://developer.huawei.com/consumer/cn/doc/AppGallery-connect-References/flutter-clouddb-overview-0000001108597968)
-
-## 许可证
-
-[Apache License, version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+Apache License 2.0
