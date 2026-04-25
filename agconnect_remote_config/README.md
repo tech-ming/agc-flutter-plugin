@@ -1,16 +1,18 @@
-# AGConnect Remote Config（远程配置）
+﻿# AGConnect Remote Config（远程配置）
 
 ## 简介
 
-远程配置服务允许在线管理参数，无需用户更新应用即可在云端灵活修改应用的行为和外观。
+远程配置服务允许在线管理参数，无需用户升级应用即可动态调整应用行为和展示内容。
 
-[官方文档](https://developer.huawei.com/consumer/cn/doc/AppGallery-connect-Guides/agc-remoteconfig-introduction)
+- 官方文档：https://developer.huawei.com/consumer/cn/doc/AppGallery-connect-Guides/agc-remoteconfig-introduction
 
 ## 平台支持
 
-| Android | iOS | HarmonyOS |
-|:-------:|:---:|:---------:|
-| ✅ | ✅ | ✅ |
+| 平台 | 支持状态 | 说明 |
+|:---:|:---:|---|
+| Android | 支持 | 原生 AGC Remote Config |
+| iOS | 支持 | 原生 AGC Remote Config |
+| HarmonyOS | 兼容支持 | AGC 官方暂不支持 OHOS 远程配置，当前通过 Android 配置文件兼容接入 |
 
 ## 安装
 
@@ -26,44 +28,42 @@ flutter pub get
 
 ## HarmonyOS 适配说明
 
-HarmonyOS 平台通过 `@hw-agconnect/remoteconfig-ohos` + `@hw-agconnect/core-ohos` 实现，支持以下功能：
+### 运行环境
 
-- 设置本地默认参数（applyDefaults）
-- 从云端拉取最新配置（fetch）
-- 应用上次获取的云端配置（applyLastFetched）
-- 获取配置值（getValue）
-- 获取值来源（getSource）
-- 获取合并后的所有配置（getMergedAll）
-- 清空所有缓存数据（clearAll）
-- 设置/获取自定义属性（setCustomAttributes / getCustomAttributes）
+- DevEco Studio: 3.1 Beta2(3.1.0.400)
+- SDK: API9 Release(3.2.11.9)
 
-### 初始化机制
+### 关键结论
 
-插件在 `onAttachedToEngine` 时自动完成初始化：
+- AGC 官方当前不提供 OHOS 远程配置原生能力。
+- 本插件在 OHOS 端采用 Android 配置兼容方案。
 
-1. 通过 `binding.getApplicationContext()` 获取上下文
-2. 调用 `agconnect.instance().init(context)` 初始化 AGC core SDK
-3. 获取 `remoteConfig` 实例并调用 `initialized()` 加载本地缓存
+### 配置方式
 
-**前提条件：** `agconnect-services.json` 需放置在 `rawfile` 目录下，SDK 会自动读取。
+1. 从 AGC 控制台下载 Android 平台的 `agconnect-services.json`。
+2. 复制到 OHOS 目录 `ohos/AppScope/resources/rawfile/`。
+3. 将文件重命名为 `agconnect-services-android.json`。
+
+说明：OHOS 侧插件初始化时优先读取 `rawfile/agconnect-services-android.json`；如果读取失败，回退到默认初始化流程。
+
+### 功能支持
+
+- `applyDefaults`
+- `fetch`
+- `applyLastFetched`
+- `getValue`
+- `getSource`
+- `getMergedAll`
+- `clearAll`
+- `setCustomAttributes`
+- `getCustomAttributes`
 
 ### 与 Android/iOS 的差异
 
 | 功能 | Android/iOS | HarmonyOS | 说明 |
-|------|:-----------:|:---------:|------|
-| setDeveloperMode | ✅ | ⚠️ | HarmonyOS 无对应 API，调用不报错但无实际效果 |
+|---|:---:|:---:|---|
+| `setDeveloperMode` | 支持 | 不支持 | OHOS 无对应 API，调用后直接返回成功 |
 
-### 核心文件
+## 许可
 
-| 文件 | 职责 |
-|------|------|
-| `AgconnectRemoteConfigPlugin.ets` | 插件入口（初始化 + MethodChannel 分发） |
-
-## 开发指南
-
-- [使用指南](https://developer.huawei.com/consumer/cn/doc/AppGallery-connect-Guides/agc-remoteconfig-flutter-usage)
-- [API 参考](https://developer.huawei.com/consumer/cn/doc/AppGallery-connect-References/agc-overview-flutter)
-
-## 许可证
-
-[Apache License, version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+Apache License 2.0
