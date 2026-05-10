@@ -6,6 +6,8 @@ import {
   MethodChannel,
   MethodResult,
   AbilityPluginBinding,
+  EventChannel,
+  EventSink,
 } from '@ohos/flutter_ohos';
 import { AgconnectAuthMethodHandler } from './AgconnectAuthMethodHandler';
 import auth from '@hw-agconnect/auth';
@@ -16,6 +18,7 @@ import { util } from '@kit.ArkTS';
 /** AGC Auth 鸿蒙侧插件入口，对应 Dart MethodChannel: com.huawei.flutter/agconnect_auth */
 export default class AgconnectAuthPlugin implements FlutterPlugin, MethodCallHandler {
   private channel: MethodChannel | null = null;
+  private eventChannel: EventChannel | null = null;
   // 所有方法实现委托给 handler，保持本类职责单一
   private readonly handler: AgconnectAuthMethodHandler = new AgconnectAuthMethodHandler();
   // 缓存 FlutterPluginBinding，在 onAttachedToAbility 中使用
@@ -32,6 +35,16 @@ export default class AgconnectAuthPlugin implements FlutterPlugin, MethodCallHan
     this.pluginBinding = binding;
     this.channel = new MethodChannel(binding.getBinaryMessenger(), "com.huawei.flutter/agconnect_auth");
     this.channel.setMethodCallHandler(this);
+    // 注册 EventChannel，响应 Dart 端 tokenChanges() 的 listen/cancel 调用
+    // 鸿蒙 Auth SDK 暂无 addTokenListener API，因此仅注册空 handler 避免 MissingPluginException
+    this.eventChannel = new EventChannel(binding.getBinaryMessenger(), "com.huawei.flutter.event/agconnect_auth");
+    this.eventChannel.setStreamHandler({
+      onListen: (_args: Object, _sink: EventSink) => {
+        // TODO: 鸿蒙 Auth SDK 提供 addTokenListener 后，在此推送 token 变化事件
+      },
+      onCancel: (_args: Object) => {
+      },
+    });
   }
 
   /**
@@ -77,6 +90,9 @@ export default class AgconnectAuthPlugin implements FlutterPlugin, MethodCallHan
     this.pluginBinding = null;
     if (this.channel != null) {
       this.channel.setMethodCallHandler(null)
+    }
+    if (this.eventChannel != null) {
+      this.eventChannel.setStreamHandler(null)
     }
   }
 

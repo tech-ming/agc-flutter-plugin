@@ -32,7 +32,7 @@ class EmailAuthProvider {
        String email,  String verifyCode,
       { String? password}) {
     return EmailAuthCredential(
-        email, "", verifyCode, AuthProviderType.email);
+        email, password ?? "", verifyCode, AuthProviderType.email);
   }
 
   /// Applies for a verification code using an email address.
