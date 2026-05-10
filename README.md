@@ -1,6 +1,6 @@
 ﻿# AGC Flutter Plugin（HarmonyOS 适配版）
 
-基于 https://github.com/AppGallery-Connect/agc-flutter-plugin 的 HarmonyOS 适配分支。
+基于 <https://github.com/AppGallery-Connect/agc-flutter-plugin> 的 HarmonyOS 适配分支。
 
 ## 概述
 
@@ -17,10 +17,11 @@
 | `agconnect_storage` | 云存储 | ✅ | ✅ | ✅ |
 | `agconnect_crash` | 崩溃分析 | ✅ | ✅ | ❌ |
 | `agconnect_remote_config` | 远程配置 | ✅ | ✅ | ⚠️ |
-| `agconnect_applinking` | 应用链接 | ✅ | ✅ | ❌ |
+| `agconnect_applinking` | 应用链接 | ✅ | ✅ | ✅ |
 | `agconnect_appmessaging` | 应用内消息 | ✅ | ✅ | ❌ |
 
 说明：
+
 - `✅` 表示已支持。
 - `❌` 表示未适配。
 - `⚠️` 表示兼容方案支持（非官方原生能力）。
@@ -49,7 +50,7 @@
 
 ## 上游仓库
 
-- 原始仓库：https://github.com/AppGallery-Connect/agc-flutter-plugin
+- 原始仓库：<https://github.com/AppGallery-Connect/agc-flutter-plugin>
 
 ## 许可
 

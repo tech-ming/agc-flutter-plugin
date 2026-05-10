@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "agconnect_applinking",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}

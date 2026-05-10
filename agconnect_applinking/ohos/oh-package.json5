@@ -1,0 +1,9 @@
+{
+  "name": "agconnect_applinking",
+  "version": "1.0.0",
+  "description": "AGC AppLinking Flutter plugin for HarmonyOS",
+  "main": "index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {}
+}

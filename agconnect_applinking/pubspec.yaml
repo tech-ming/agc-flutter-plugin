@@ -25,3 +25,5 @@ flutter:
         pluginClass: AppLinkingPlugin
       ios:
         pluginClass: AppLinkingPlugin
+      ohos:
+        pluginClass: AgconnectApplinkingPlugin
