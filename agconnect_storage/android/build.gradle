@@ -46,5 +46,5 @@ android {
 }
 
 dependencies { 
-    implementation "com.huawei.agconnect:agconnect-storage:1.9.1.300"
+    implementation "com.huawei.agconnect:agconnect-storage:1.9.6.300"
 }

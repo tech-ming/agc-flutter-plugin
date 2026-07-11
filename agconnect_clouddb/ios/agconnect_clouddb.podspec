@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.source_files = 'Classes/**/*'
   s.private_header_files = 'Classes/AGCCloudDB-Bridging-Header.h'
   s.dependency 'Flutter'
-  s.dependency 'AGConnectDatabase', '1.9.0.300'
+  s.dependency 'AGConnectDatabase', '1.9.4.300'
   s.platform = :ios, '9.0'
   s.static_framework = true
 

@@ -29,6 +29,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 29
+        // 随 AAR 分发的混淆规则：集成方开启 minify 时自动保留 CloudDB ObjectType 生成类
+        consumerProguardFiles 'consumer-rules.pro'
     }
     lintOptions {
         disable "InvalidPackage"
@@ -40,5 +42,5 @@ android {
 }
 
 dependencies { 
-    implementation "com.huawei.agconnect:agconnect-cloud-database:1.9.1.300"
+    implementation "com.huawei.agconnect:agconnect-cloud-database:1.9.6.300"
 }

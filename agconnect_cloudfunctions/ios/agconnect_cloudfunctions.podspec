@@ -15,7 +15,7 @@ AppGallery Connect Cloud Functions Kit plugin for Flutter. Cloud Functions enabl
   s.source           = { :git => '' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'AGConnectFunction', '1.9.0.300'
+  s.dependency 'AGConnectFunction', '1.9.4.300'
   s.platform = :ios, '9.0'
   s.static_framework = true
 

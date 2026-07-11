@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'AGConnectAppLinking' , '1.9.0.300'
+  s.dependency 'AGConnectAppLinking' , '1.9.4.300'
   s.platform = :ios, '9.0'
   s.static_framework = true
 

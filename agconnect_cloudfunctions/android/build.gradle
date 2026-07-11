@@ -45,5 +45,5 @@ android {
 }
 
 dependencies {
-    implementation 'com.huawei.agconnect:agconnect-function:1.9.1.300'
+    implementation 'com.huawei.agconnect:agconnect-function:1.9.6.300'
 }

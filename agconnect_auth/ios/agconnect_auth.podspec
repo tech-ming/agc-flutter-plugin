@@ -19,7 +19,7 @@ Flutter plugin for AppGallery Connect Auth SDK.
   s.platform = :ios, '9.0'
   s.static_framework = true
 
-  s.dependency 'AGConnectAuth', '1.9.0.300'
+  s.dependency 'AGConnectAuth', '1.9.4.300'
 
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
